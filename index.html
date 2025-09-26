@@ -18,7 +18,7 @@
         terminal.open(terminalContainer);
 
         // **IMPORTANT**: Replace with the actual WebSocket URL of your *backend server*
-        const websocketUrl = 'ws://your-backend-vps-ip:8080/shell'; 
+        const websocketUrl = 'ws://vercel-vps.vercel.app/:8080/shell'; 
         const ws = new WebSocket(websocketUrl);
 
         ws.onopen = () => {
