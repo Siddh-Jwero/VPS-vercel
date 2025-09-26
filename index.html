@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vercel Web Terminal Frontend</title>
+    <link rel="stylesheet" href="https://unpkg.com/xterm@4.13.0/css/xterm.css" />
+    <script src="https://unpkg.com/xterm@4.13.0/lib/xterm.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #1e1e1e; color: #eee; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        #terminal-container { width: 80%; height: 70vh; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="terminal-container"></div>
+
+    <script>
+        const terminal = new Terminal();
+        const terminalContainer = document.getElementById('terminal-container');
+        terminal.open(terminalContainer);
+
+        // **IMPORTANT**: Replace with the actual WebSocket URL of your *backend server*
+        const websocketUrl = 'ws://your-backend-vps-ip:8080/shell'; 
+        const ws = new WebSocket(websocketUrl);
+
+        ws.onopen = () => {
+            terminal.write('Connected to backend shell. Type "ls" or "whoami"\r\n');
+        };
+
+        ws.onmessage = (event) => {
+            terminal.write(event.data);
+        };
+
+        ws.onerror = (error) => {
+            terminal.write(`\r\nWebSocket Error: ${error.message}\r\n`);
+            console.error('WebSocket Error:', error);
+        };
+
+        ws.onclose = () => {
+            terminal.write('\r\nDisconnected from backend shell.\r\n');
+        };
+
+        // Send data typed in the terminal to the WebSocket
+        terminal.onData(data => {
+            ws.send(data);
+        });
+
+        // Handle terminal resizing
+        terminal.onResize(size => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'resize', cols: size.cols, rows: size.rows }));
+            }
+        });
+
+        // Initial terminal size for the backend
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'resize', cols: terminal.cols, rows: terminal.rows }));
+        }
+
+    </script>
+</body>
+</html>
