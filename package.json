@@ -1,0 +1,13 @@
+{
+  "name": "websocket-shell-backend",
+  "version": "1.0.0",
+  "description": "Backend for a web-based terminal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "node-pty": "^0.9.0",
+    "ws": "^7.5.0"
+  }
+}
